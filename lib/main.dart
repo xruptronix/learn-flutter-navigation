@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+class ScreenArguments {
+  final String title;
+  final String message;
+
+  ScreenArguments(this.title, this.message);
+}
+
 void main() => runApp(
   MaterialApp(
     title: 'Navigation Example',
@@ -10,7 +17,32 @@ void main() => runApp(
   )
 );
 
-class First extends StatelessWidget {
+class First extends StatefulWidget {
+
+  @override
+  _FirstState createState() => _FirstState();
+}
+
+class _FirstState extends State<First> {
+
+  int _count = 0;
+
+  _navigateToSecondRoute(BuildContext context) async {
+    final result = await Navigator.pushNamed(
+                    context, 
+                    '/second',
+                    arguments: ScreenArguments(
+                      'SoBack',
+                      'This message is extracted in the build method.',
+                    ),
+                  );
+      setState(() {
+        print(result);
+        // _count = int.parse(result);
+        _count = result;
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,9 +51,9 @@ class First extends StatelessWidget {
       ),
       body: Center(
         child: RaisedButton(
-          child: Text('Open Route'),
+          child: Text('$_count'),
           onPressed: (){
-            Navigator.pushNamed(context, '/second');
+            _navigateToSecondRoute(context);
           },
         ),
       ),
@@ -30,17 +62,22 @@ class First extends StatelessWidget {
 }
 
 class Second extends StatelessWidget {
+
+  
   @override
   Widget build(BuildContext context) {
+
+    final ScreenArguments args = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Second Screen'),
       ),
       body: Center(
         child: RaisedButton(
-          child: Text('Go Back'),
+          child: Text(args.title),
           onPressed: (){
-            Navigator.pop(context);
+            Navigator.pop(context,100);
           },
         ),
       ),
